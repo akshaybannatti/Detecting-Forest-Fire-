@@ -1,0 +1,33 @@
+# Import the necessary libraries
+import pandas as pd
+from sklearn.model_selection import train_test_split
+from sklearn.ensemble import RandomForestClassifier
+from sklearn.metrics import accuracy_score
+
+# Load the dataset
+dataset = pd.read_csv('forest_fire_dataset.csv')
+
+# Split the dataset into features (X) and target variable (y)
+X = dataset.drop('fire_occurrence', axis=1)
+y = dataset['fire_occurrence']
+
+# Split the data into training and testing sets
+X_train, X_test, y_train, y_test = train_test_split(X, y, test_size=0.2, random_state=42)
+
+# Create a Random Forest classifier
+rf_classifier = RandomForestClassifier(n_estimators=100, random_state=42)
+
+# Train the classifier
+rf_classifier.fit(X_train, y_train)
+
+# Make predictions on the test set
+predictions = rf_classifier.predict(X_test)
+
+# Evaluate the model
+accuracy = accuracy_score(y_test, predictions)
+print("Accuracy:", accuracy)
+
+# Example usage: Predicting fire occurrence for a new sample
+new_sample = [[70, 20, 25, 10, 5]]
+prediction = rf_classifier.predict(new_sample)
+print("Fire Occurrence Prediction:", prediction)
