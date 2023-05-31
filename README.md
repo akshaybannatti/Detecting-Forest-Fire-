@@ -5,9 +5,13 @@ This project is an attempt to use convolutional neural networks (CNN) to detect 
 
 A description of the project, along with examples of video annotation by our network is provided below.
 
-![video_0 (1)](https://github.com/akshaybannatti/Detecting-Forest-Fire-Convolutional-Neural-Network/assets/50884750/378adb83-cc18-49d2-b365-2f14f2626ec2) 
+![video_0 (1)](https://github.com/akshaybannatti/Detecting-Forest-Fire-Convolutional-Neural-Network/assets/50884750/378adb83-cc18-49d2-b365-2f14f2626ec2)  
 
-https://github.com/akshaybannatti/Detecting-Forest-Fire-Convolutional-Neural-Network/assets/50884750/0a1f7f0d-bcf8-44f5-844c-954ecd201dd3
+https://github.com/akshaybannatti/Detecting-Forest-Fire-Convolutional-Neural-Network/assets/50884750/15399b35-3953-43c5-a332-eb5252b456e4
+
+
+
+
 
 
 
@@ -106,6 +110,20 @@ From our experiments, it seems that 'fire' and 'no fire' images are always lassi
 
 Video examples
 Examples of videos annotated by our model can be found below.
+
+https://github.com/akshaybannatti/Detecting-Forest-Fire-Convolutional-Neural-Network/assets/50884750/b305e6a7-3ad9-49b8-a7b8-8b853248eae7
+
+
+
+https://github.com/akshaybannatti/Detecting-Forest-Fire-Convolutional-Neural-Network/assets/50884750/67c5614c-3883-42f7-acb2-6bc128dd24d2
+
+
+
+https://github.com/akshaybannatti/Detecting-Forest-Fire-Convolutional-Neural-Network/assets/50884750/dfc821e7-7139-48b2-ad72-cd3b8d143f4d
+
+![video_0 (1)](https://github.com/akshaybannatti/Detecting-Forest-Fire-Convolutional-Neural-Network/assets/50884750/378adb83-cc18-49d2-b365-2f14f2626ec2)  
+
+
 
 
 
