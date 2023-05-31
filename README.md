@@ -5,7 +5,11 @@ This project is an attempt to use convolutional neural networks (CNN) to detect 
 
 A description of the project, along with examples of video annotation by our network is provided below.
 
-![video_0 (1)](https://github.com/akshaybannatti/Detecting-Forest-Fire-Convolutional-Neural-Network/assets/50884750/378adb83-cc18-49d2-b365-2f14f2626ec2)
+![video_0 (1)](https://github.com/akshaybannatti/Detecting-Forest-Fire-Convolutional-Neural-Network/assets/50884750/378adb83-cc18-49d2-b365-2f14f2626ec2) 
+
+https://github.com/akshaybannatti/Detecting-Forest-Fire-Convolutional-Neural-Network/assets/50884750/0a1f7f0d-bcf8-44f5-844c-954ecd201dd3
+
+
 
 
 
@@ -102,6 +106,8 @@ From our experiments, it seems that 'fire' and 'no fire' images are always lassi
 
 Video examples
 Examples of videos annotated by our model can be found below.
+
+
 
 
 
