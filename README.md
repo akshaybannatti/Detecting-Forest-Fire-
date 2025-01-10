@@ -7,29 +7,20 @@ A description of the project, along with examples of video annotation by our net
 
 ![video_0 (1)](https://github.com/akshaybannatti/Detecting-Forest-Fire-Convolutional-Neural-Network/assets/50884750/378adb83-cc18-49d2-b365-2f14f2626ec2)  
 
-https://github.com/akshaybannatti/Detecting-Forest-Fire-Convolutional-Neural-Network/assets/50884750/15399b35-3953-43c5-a332-eb5252b456e4
+Dataset Overview
+The model was trained using a dataset containing images from three categories: 'fire', 'no fire', and 'start fire'. In total, the dataset comprises around 6,000 images, primarily featuring forest or forest-like environments.
 
+'Fire' images contain visible flames.
+'Start fire' images feature smoke, indicating the beginning of a fire.
+'No fire' images depict forest scenes without any fire or smoke.
+Data Augmentation
+Through experimentation, we observed that the model struggled to classify 'start fire' images effectively. To address this, we enriched the dataset by extracting frames from videos that depict the early stages of a fire. To improve the model’s ability to generalize, we applied data augmentation techniques provided by Keras. This involved performing random transformations on the images, including zooms, shifts, crops, and rotations, to diversify the training data before it was fed into the model.
 
+Project Structure
+The project was designed to be clean and organized, covering all aspects of CNN creation and training. The directory structure is as follows:
 
-
-
-
-
-
-
-
- 
-
-Datasets
-Provided dataset
-Our network is trained on a provided dataset which contains images of three categories : 'fire', 'no fire', 'start fire' totalling around 6000 images. These images are mostly of forest or forest-like environments. Images labelled 'fire' contain visible flames, 'start fire' images contain smoke indicating the start of a fire. Finaly, images labelled 'no fire' are images taken in forests.
-
-Augmenting the dataset
-Our experiments showed that the network had trouble classifying 'start fire' images so we added images of this category to the dataset by extracting frames from videos showing the start of a fire. In order to train a network which generalizes well to new images, we used data augmentation functions provided by Keras to perform a series of random transformations (zooms, shifts, crops and rotations) on images before they are fed to the network.
-
-Project structure
-Our goal was to create a legible project which handles every aspect of CNN creation and training. The code is organized as follows :
-
+arduino
+Copy code
 ├── launcher.py
 ├── transfer_learning.py
 ├── video_annotation.py
@@ -50,63 +41,66 @@ Our goal was to create a legible project which handles every aspect of CNN creat
 │   ├── video_1.gif
 │   ├── video_2.gif
 │   └── video_3.gif
-The datasets can be setup using functions defines in setup_datasets.py. The model we used which performs transfer learning from InceptionV3 is defined in transfer_learning.py, this module contains a function that defines a batch generator which performs data augmentation. The training process is also handled in this file, with the possibility of freezing layers and adapting the learning rate for fine-tuning. Modules video_annotation.py allows to annotate a video with predictions from our CNN and evaluate_model.py allows us to evaluate our model and mine difficult examples for the network.
-
+Modules Overview
+setup_datasets.py: Handles dataset setup and preparation.
+transfer_learning.py: Implements the transfer learning model based on InceptionV3, including the definition of a batch generator that applies data augmentation techniques. This file also manages training, including the option to freeze layers and adjust the learning rate for fine-tuning.
+video_annotation.py: Annotates video frames with predictions from the trained CNN.
+evaluate_model.py: Evaluates the model and extracts challenging examples for further training.
 Usage
-Requirements:
-The project was tested with the following versions of librairies:
+The project is controlled via a command-line interface (CLI) through the launcher.py module, which accepts various commands to manage training, fine-tuning, prediction, and video annotation. Here are some examples of the available commands:
 
-  imageio==2.6.1
-  imageio-ffmpeg==0.3.0
-  Keras==2.1.6
-  matplotlib==2.2.3
-  numpy==1.15.1
-  opencv-contrib-python==3.4.0.12
-  Pillow==5.2.0
-  tensorflow==1.5.1
-Launcher
-The module launcher.py contains a command-line parser which allows to launch our project.
+Train the model:
 
-Training
-DATASET is the path to the dataset. PROPORTION must be in [0, 1] is the proportion of the dataset to be used for training, the rest is kept for validation. FREEZE is a boolean on whether to freeze the inception layers in the network. EPOCHS and BATCH_SIZE can be specified, their default values are 10 and 32.
+css
+Copy code
+launcher.py train -data DATASET -prop PROPORTION -freeze FREEZE [-epochs EPOCHS] [-batch BATCH_SIZE]
+Fine-tune a pre-trained model:
 
-launcher.py train [-h] -data DATASET -prop PROPORTION -freeze FREEZE [-epochs EPOCHS] [-batch BATCH_SIZE]
-Fine tuning
-MODEL_PATH is the path to a pre-trained model, this must be a file containing wieghts + architecture. LEARNING_RATE can be specified, its default value is 0.001 (0.01 is used when training and is the default value of the optimizer we used).
+css
+Copy code
+launcher.py tune -model MODEL_PATH -lr LEARNING_RATE -data DATASET -prop PROPORTION -freeze FREEZE [-epochs EPOCHS] [-batch BATCH_SIZE]
+Make predictions on an image:
 
-launcher.py tune [-h] -model MODEL_PATH [-lr LEARNING_RATE] -data DATASET -prop PROPORTION -freeze FREEZE [-epochs EPOCHS] [-batch BATCH_SIZE]
-Perform a prediction
-launcher.py predict [-h] -path IMAGE_PATH -model MODEL_PATH
-Extract difficult examples
-Extracts images which are hard to classify by the model. When the network performs a prediction with a confidence level (probability) lower than EXTRACT_THRESHOLD for the correct class of an image, the path to this image is yielded.
+lua
+Copy code
+launcher.py predict -path IMAGE_PATH -model MODEL_PATH
+Extract difficult examples:
 
-launcher.py extract [-h] -data DATASET -model MODEL_PATH -threshold EXTRACT_THRESHOLD
-Metrics on a test set
-Yields the metrics of our model on a test set.
+kotlin
+Copy code
+launcher.py extract -data DATASET -model MODEL_PATH -threshold EXTRACT_THRESHOLD
+Evaluate the model on a test set:
 
-launcher.py test [-h] -data DATASET -model MODEL_PATH
-Video annotation
-The video given by INPUT_VIDEO_PATH is processed and prediction is performed on its frames, the annotated video is written to OUTPUT_VIDEO_PATH. A FREQ can be given so that only one out of every FREQ frames is extracted for prediction to speed up processing.
+bash
+Copy code
+launcher.py test -data DATASET -model MODEL_PATH
+Annotate a video with predictions:
 
-launcher.py video [-h] -in INPUT_VIDEO_PATH -out OUTPUT_VIDEO_PATH -model MODEL_PATH [-freq FREQ]
-Results
-Trained model file
-Our trained model file containing the model architecture and trained weights is the file transfer_learned_model.h5 at the root of the project.
+css
+Copy code
+launcher.py video -in INPUT_VIDEO_PATH -out OUTPUT_VIDEO_PATH -model MODEL_PATH [-freq FREQ]
+Model and Performance
+The trained model is saved as transfer_learned_model.h5 at the root of the project. The model's performance, measured by categorical loss and accuracy, is as follows:
 
-Performance
-The performance of our model, measured by categorical loss and accuracy is the following:
+On the provided test set (100 samples):
 
-On the provided test set :
+Loss: 0.3497
+Accuracy: 91.09%
+On the entire dataset (5953 samples):
 
-transfer_learned_model.h5
-100 samples
-loss : 0.3496805104602239 | acc : 0.9108910891089109 
-On the whole dataset :
+Loss: 0.0361
+Accuracy: 99.14%
+From our experiments, we found that the model performs exceptionally well at classifying 'fire' and 'no fire' images with high accuracy. However, the 'start fire' images are more challenging to classify. This could be due to the fact that 'fire' images may also contain smoke, and 'start fire' images sometimes feature small flames that are harder to distinguish.
 
-transfer_learned_model.h5
-5953 samples
-loss : 0.0360565472869205 | acc : 0.9914328909793382
-From our experiments, it seems that 'fire' and 'no fire' images are always lassified with high accuracy. Images labelled 'start fire' are harder to classify for the network. This may be explained by the fact that 'fire' images may contain smoke and that 'start fire' images sometimes contain small flames.
+Video Examples
+Examples of annotated videos processed by the model can be found in the video_examples/ directory. These videos demonstrate the model's ability to make real-time predictions on video frames.
+
+
+
+
+
+
+
 
 Video examples
 Examples of videos annotated by our model can be found below.
