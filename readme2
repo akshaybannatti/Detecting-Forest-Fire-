@@ -1,0 +1,200 @@
+
+Certainly! Let's extend the project with the required components, including the CNN model, training script, and prediction script. I'll break this down as follows:
+
+CNN Model (cnn_model.py) – The architecture of the Convolutional Neural Network.
+Training Script (train_model.py) – Script to train the CNN model.
+Prediction Script (predict_fire.py) – A script to make predictions using the trained model.
+Required files for training and prediction handling.
+4. cnn_model.py – CNN Architecture
+Here, we define the CNN model architecture using Keras and TensorFlow.
+
+python
+Copy code
+import tensorflow as tf
+from tensorflow.keras import layers, models
+
+def create_cnn_model(input_shape=(224, 224, 3)):
+    model = models.Sequential()
+
+    # Convolutional layer 1
+    model.add(layers.Conv2D(32, (3, 3), activation='relu', input_shape=input_shape))
+    model.add(layers.MaxPooling2D((2, 2)))
+
+    # Convolutional layer 2
+    model.add(layers.Conv2D(64, (3, 3), activation='relu'))
+    model.add(layers.MaxPooling2D((2, 2)))
+
+    # Convolutional layer 3
+    model.add(layers.Conv2D(128, (3, 3), activation='relu'))
+    model.add(layers.MaxPooling2D((2, 2)))
+
+    # Flatten the 3D feature maps to 1D
+    model.add(layers.Flatten())
+
+    # Fully connected layer
+    model.add(layers.Dense(128, activation='relu'))
+
+    # Output layer for binary classification
+    model.add(layers.Dense(1, activation='sigmoid'))
+
+    # Compile the model
+    model.compile(optimizer='adam',
+                  loss='binary_crossentropy',
+                  metrics=['accuracy'])
+
+    return model
+5. train_model.py – Training the CNN Model
+This script will load the dataset, preprocess the images, and train the CNN model.
+
+python
+Copy code
+import os
+import numpy as np
+from tensorflow.keras.preprocessing.image import ImageDataGenerator
+from cnn_model import create_cnn_model
+from tensorflow.keras.callbacks import ModelCheckpoint
+
+def setup_image_generators(train_dir, test_dir, batch_size=32, target_size=(224, 224)):
+    # Image data augmentation for training
+    train_datagen = ImageDataGenerator(rescale=1./255,
+                                       rotation_range=40,
+                                       width_shift_range=0.2,
+                                       height_shift_range=0.2,
+                                       shear_range=0.2,
+                                       zoom_range=0.2,
+                                       horizontal_flip=True,
+                                       fill_mode='nearest')
+
+    # For validation data (no augmentation, only rescaling)
+    test_datagen = ImageDataGenerator(rescale=1./255)
+
+    # Load training and testing data
+    train_generator = train_datagen.flow_from_directory(
+        train_dir,
+        target_size=target_size,
+        batch_size=batch_size,
+        class_mode='binary')
+
+    test_generator = test_datagen.flow_from_directory(
+        test_dir,
+        target_size=target_size,
+        batch_size=batch_size,
+        class_mode='binary')
+
+    return train_generator, test_generator
+
+def train_model(train_dir, test_dir, model_save_path='forest_fire_model.h5'):
+    # Set up image generators
+    train_generator, test_generator = setup_image_generators(train_dir, test_dir)
+
+    # Create the CNN model
+    model = create_cnn_model()
+
+    # Define a checkpoint to save the best model
+    checkpoint = ModelCheckpoint(model_save_path, monitor='val_loss', save_best_only=True)
+
+    # Train the model
+    model.fit(
+        train_generator,
+        steps_per_epoch=train_generator.samples // train_generator.batch_size,
+        epochs=10,
+        validation_data=test_generator,
+        validation_steps=test_generator.samples // test_generator.batch_size,
+        callbacks=[checkpoint])
+
+    # Save the final model
+    model.save(model_save_path)
+
+    print(f"Model training complete. Saved to {model_save_path}")
+
+if __name__ == "__main__":
+    train_dir = 'dataset/train'
+    test_dir = 'dataset/test'
+
+    # Train the model
+    train_model(train_dir, test_dir)
+6. predict_fire.py – Making Predictions with the Trained Model
+This script will load the trained model and use it to make predictions on new images.
+
+python
+Copy code
+import tensorflow as tf
+from tensorflow.keras.preprocessing import image
+import numpy as np
+import os
+
+# Load the trained model
+def load_model(model_path='forest_fire_model.h5'):
+    model = tf.keras.models.load_model(model_path)
+    return model
+
+# Function to preprocess image before prediction
+def preprocess_image(img_path, target_size=(224, 224)):
+    img = image.load_img(img_path, target_size=target_size)
+    img_array = image.img_to_array(img) / 255.0  # Normalize image
+    img_array = np.expand_dims(img_array, axis=0)  # Add batch dimension
+    return img_array
+
+# Function to predict whether there's a fire
+def predict_fire(model, img_path):
+    img_array = preprocess_image(img_path)
+    prediction = model.predict(img_array)
+    
+    # If prediction > 0.5, it is a fire (class 1), else no fire (class 0)
+    if prediction > 0.5:
+        return "Fire Detected"
+    else:
+        return "No Fire Detected"
+
+if __name__ == "__main__":
+    # Path to the trained model
+    model_path = 'forest_fire_model.h5'
+
+    # Load the trained model
+    model = load_model(model_path)
+
+    # Path to the image to predict
+    test_image_path = 'path_to_image.jpg'
+
+    # Make a prediction
+    result = predict_fire(model, test_image_path)
+    print(f"Prediction result for {test_image_path}: {result}")
+Notes for Running the Code:
+Dataset Structure: Ensure that your dataset is structured as follows:
+
+Copy code
+dataset/
+├── fire/
+└── no_fire/
+This structure is used by the setup_datasets.py and training script.
+
+Model Training: Run the train_model.py script to train the CNN model:
+
+bash
+Copy code
+python train_model.py
+Prediction: After training the model, you can use the predict_fire.py script to predict whether an image contains a forest fire:
+
+bash
+Copy code
+python predict_fire.py
+Final Project Structure:
+bash
+Copy code
+forest_fire_detection/
+│
+├── dataset/
+│   ├── train/
+│   │   ├── fire/
+│   │   └── no_fire/
+│   ├── test/
+│   │   ├── fire/
+│   │   └── no_fire/
+│   └── forest_fire_dataset.zip
+│
+├── cnn_model.py           # CNN Model architecture
+├── naive_approach.py      # Naive fire detection approach
+├── setup_datasets.py      # Dataset setup script
+├── train_model.py         # Model training script
+├── predict_fire.py        # Script for making predictions
+└── Forest_Fire_Prediction_using_Machine_Learning.txt
